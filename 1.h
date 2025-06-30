@@ -1,3 +1,7 @@
+// Approximate time - 1 hour
+
 #pragma once
 
-const unsigned int* invertBitSequence(const unsigned int* inputNumber);
+#include <cstdint>
+
+const uint32_t invertBitSequence(const uint32_t inputNumber);
