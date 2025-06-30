@@ -1,3 +1,5 @@
+// Approximate time - 5 hours
+
 #include "2.h"
 
 #include <random>
@@ -31,27 +33,26 @@ void List::Deserialize(FILE* file)
 	if (count > 0)
 		ClearList();
 
-	// map to store relation between node and random node
+	// key - current node address, value - address to random node in current node
 	std::map<std::string, std::string> nodeRelations;
-	// map to store association between old and new address of node
+	// key - new node address, value - old node address
 	std::map<ListNode*, std::string> fromNewToOldAddress;
-	// map to store association between new and old address of node
+	// key - old node address, value - new node address
 	std::map<std::string, ListNode*> fromOldToNewAddress;
+
 	std::vector<std::string> lineElements;
 	lineElements.resize(3);
 
 	char data[1000];
 
-	// reading file content line by line
 	while (fgets(data, 1000, file) != nullptr)
 	{
 		std::string temp{ data };
-		// divide line on words by spaces
+
 		std::istringstream sstream(temp);
 		sstream >> lineElements[0]; // node data
 		sstream >> lineElements[1]; // ptr to current node
 		sstream >> lineElements[2]; // ptr to random node in current node
-		// check if all data was read succesfully
 		if (lineElements[0] == "" || lineElements[1] == "" || lineElements[2] == "")
 			return;
 		AddNode(lineElements[0]);
@@ -64,7 +65,7 @@ void List::Deserialize(FILE* file)
 	{
 		ListNode* randomNode = nullptr;
 		ListNode* currentNode = nodePointers[i];
-		// find old random node address by current node address
+
 		std::string oldRandomNodeAddress = nodeRelations[fromNewToOldAddress[currentNode]];
 		// check if old random node address isn't null then assign new random node addres to current node 
 		// else assign nullptr

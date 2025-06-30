@@ -1,3 +1,5 @@
+// Approximate time - 5 hours
+
 #pragma once
 
 #include <string>
