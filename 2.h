@@ -4,13 +4,12 @@
 
 #include <string>
 #include <vector>
-
-// структуру ListNode модифицировать нельзя  
+  
 struct ListNode 
 {
 	ListNode* prev;
 	ListNode* next;
-	ListNode* rand; // указатель на произвольный элемент данного списка, либо NULL
+	ListNode* rand;
 	std::string data;
 };
 
@@ -19,8 +18,8 @@ class List
 public:
 	List() : head(nullptr), tail(nullptr), count(0) {}
 	~List();
-	void Serialize(FILE* file); // сохранение в файл ( файл открыт с помощью fopen(path, " wb"))
-	void Deserialize(FILE* file); // загрузка из файла (файл открыт с помощью fopen(path, "rb"))
+	void Serialize(FILE* file);
+	void Deserialize(FILE* file);
 
 	void AddNode(std::string data);
 	void SetPointersToRandomNodes();
