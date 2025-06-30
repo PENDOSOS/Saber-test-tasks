@@ -26,7 +26,15 @@ public:
 
 	ListNode* GetTail() { return tail; }
 private:
-	ListNode* GetPointerToRandomNode();
+	// structure to write/read ListNode to/from file
+	struct ListNodeFile
+	{
+		int64_t nodeIndex;
+		int64_t randIndex;
+		std::string data;
+	};
+
+	int64_t/*ListNode**/ GetPointerToRandomNode();
 
 	void ClearList();
 
@@ -36,4 +44,6 @@ private:
 
 	// vector to store all pointers to nodes in one memory block
 	std::vector<ListNode*> nodePointers;
+	// vector to store info about random node indices
+	std::vector<int64_t> randomNodeIndices;
 };

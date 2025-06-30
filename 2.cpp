@@ -5,6 +5,7 @@
 #include <random>
 #include <unordered_map>
 #include <sstream>
+#include <iostream>
 
 List::~List()
 {
@@ -13,21 +14,19 @@ List::~List()
 
 // fwrite ?
 // дата с пробелами
-// указатели плохо (?)
+// указатели в файле плохо (?)
 
 void List::Serialize(FILE* file)
 {
 	if (file == nullptr)
 		return;
 
-	ListNode* currentNode = head;
-	while (currentNode != nullptr)
+	int64_t index = 0; 
+	for (int i = 0; i < count; i++)//while (currentNode != nullptr)
 	{
-		// write addresses of node's pointers in file to have possibility to restore full structure of list
-		fprintf(file, "%s %p %p\n", currentNode->data.c_str(), currentNode, currentNode->rand);
-		//fwrite();
-
-		currentNode = currentNode->next;
+		ListNodeFile* dataToWrite = new ListNodeFile{i, randomNodeIndices[i], nodePointers[i]->data};
+		std::cout << fwrite(dataToWrite, sizeof(ListNodeFile), 1, file);
+		delete dataToWrite;
 	}
 }
 
@@ -39,32 +38,22 @@ void List::Deserialize(FILE* file)
 	if (count > 0)
 		ClearList();
 
-	// key - current node address, value - address to random node in current node
-	std::unordered_map<std::string, std::string> nodeRelations;
-	// key - new node address, value - old node address
-	std::unordered_map<ListNode*, std::string> fromNewToOldAddress;
-	// key - old node address, value - new node address
-	std::unordered_map<std::string, ListNode*> fromOldToNewAddress;
+	// key - current node index, value - random node index
+	std::unordered_map<int64_t, int64_t> nodeRelations;
 
-	std::vector<std::string> lineElements;
+	/*std::vector<std::string> lineElements;
 	lineElements.resize(3);
 
-	char data[1000];
+	char data[1000];*/
 
-	while (fgets(data, 1000, file) != nullptr)
+	ListNodeFile readData;
+	ListNode readData1;
+
+	while (fread(&readData, sizeof(ListNodeFile), 1, file))
 	{
-		std::string temp{ data };
-
-		std::istringstream sstream(temp);
-		sstream >> lineElements[0]; // node data
-		sstream >> lineElements[1]; // ptr to current node
-		sstream >> lineElements[2]; // ptr to random node in current node
-		if (lineElements[0] == "" || lineElements[1] == "" || lineElements[2] == "")
-			return;
-		AddNode(lineElements[0]);
-		nodeRelations[lineElements[1]] = lineElements[2];
-		fromNewToOldAddress[GetTail()] = lineElements[1];
-		fromOldToNewAddress[lineElements[1]] = GetTail();
+		nodeRelations[readData.nodeIndex] = readData.randIndex;
+		AddNode(readData.data);
+		randomNodeIndices.push_back(readData.randIndex);
 	}
 
 	// restore 
@@ -73,11 +62,8 @@ void List::Deserialize(FILE* file)
 		ListNode* randomNode = nullptr;
 		ListNode* currentNode = nodePointers[i];
 
-		std::string oldRandomNodeAddress = nodeRelations[fromNewToOldAddress[currentNode]];
-		// check if old random node address isn't null then assign new random node addres to current node 
-		// else assign nullptr
-		if (std::stoull(oldRandomNodeAddress)) // just enough to get nonzero value to check if pointer is not null
-			randomNode = fromOldToNewAddress[oldRandomNodeAddress];
+		if (nodeRelations[i] != -1)
+			randomNode = nodePointers[nodeRelations[i]];
 		currentNode->rand = randomNode;
 	}
 }
@@ -104,29 +90,30 @@ void List::SetPointersToRandomNodes()
 {
 	std::srand(time(0));
 	ListNode* currentNode = head;
-	ListNode* randomNode = nullptr;
+	int64_t/*ListNode**/ randomNode;
 	while (currentNode != nullptr)
 	{
 		randomNode = GetPointerToRandomNode();
-
-		if (randomNode == currentNode)
+		randomNodeIndices.push_back(randomNode);
+		if (randomNode == -1)
 			currentNode->rand = nullptr;
 		else
-			currentNode->rand = randomNode;
+			currentNode->rand = nodePointers[randomNode]/*randomNode*/;
 
 		currentNode = currentNode->next;
 	}
 }
 
-ListNode* List::GetPointerToRandomNode()
+int64_t/*ListNode**/ List::GetPointerToRandomNode()
 {	
-	int elem = -1 + std::rand() % (count + 1);
-	if (elem == -1)
+	int64_t elem = -1 + std::rand() % (count + 1);
+	return elem;
+	/*if (elem == -1)
 		return nullptr;
 	else
 	{
 		return nodePointers[elem];
-	}
+	}*/
 }
 
 void List::ClearList()
@@ -141,4 +128,5 @@ void List::ClearList()
 	}
 	head = nullptr;
 	nodePointers.clear();
+	randomNodeIndices.clear();
 }
