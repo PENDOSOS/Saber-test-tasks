@@ -1,9 +1,9 @@
-struct point
+// Approximate time - 2 hours
+
+struct vec3
 {
 	double x, y, z;
 };
-
-using vec3 = point;
 
 //  
 // Calculate smooth (average) per-vertex normal 

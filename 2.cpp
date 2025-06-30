@@ -3,12 +3,17 @@
 #include "2.h"
 
 #include <random>
-#include <map>
+#include <unordered_map>
 #include <sstream>
 
 List::~List()
 {
+	ClearList();
 }
+
+// fwrite ?
+// дата с пробелами
+// указатели плохо (?)
 
 void List::Serialize(FILE* file)
 {
@@ -20,6 +25,7 @@ void List::Serialize(FILE* file)
 	{
 		// write addresses of node's pointers in file to have possibility to restore full structure of list
 		fprintf(file, "%s %p %p\n", currentNode->data.c_str(), currentNode, currentNode->rand);
+		//fwrite();
 
 		currentNode = currentNode->next;
 	}
@@ -34,11 +40,11 @@ void List::Deserialize(FILE* file)
 		ClearList();
 
 	// key - current node address, value - address to random node in current node
-	std::map<std::string, std::string> nodeRelations;
+	std::unordered_map<std::string, std::string> nodeRelations;
 	// key - new node address, value - old node address
-	std::map<ListNode*, std::string> fromNewToOldAddress;
+	std::unordered_map<ListNode*, std::string> fromNewToOldAddress;
 	// key - old node address, value - new node address
-	std::map<std::string, ListNode*> fromOldToNewAddress;
+	std::unordered_map<std::string, ListNode*> fromOldToNewAddress;
 
 	std::vector<std::string> lineElements;
 	lineElements.resize(3);
@@ -61,6 +67,7 @@ void List::Deserialize(FILE* file)
 		fromOldToNewAddress[lineElements[1]] = GetTail();
 	}
 
+	// restore 
 	for (int i = 0; i < count; i++)
 	{
 		ListNode* randomNode = nullptr;

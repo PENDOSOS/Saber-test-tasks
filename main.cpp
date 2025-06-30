@@ -8,13 +8,14 @@
 
 int main()
 {
-	unsigned int* test = new unsigned int;
-	*test = 3590324224;
-	//*test = 1234;
-	//*test = 107;
-	//*test = 4294967295;
-	invertBitSequence(test);
-	delete test;
+	uint32_t test = 3590324224;
+	test = 107;
+	//test = 1234;
+	//test = 1234;
+	//test = 107;
+	test = 4294967295;
+	test = 0;
+	//std::cout << invertBitSequence(test);
 
 	List* testList = new List;
 
@@ -64,6 +65,46 @@ int main()
 	delete testList;
 	delete testList2;
 
-	calc_mesh_normals();
+	vec3 points[] = {
+			{0, 0, 0}, //0
+			{0, 0, 1}, //1
+			{0, 1, 0}, //2
+			{0, 1, 1}, //3
+			{1, 0, 0}, //4
+			{1, 0, 1}, //5
+			{1, 1, 0}, //6
+			{1, 1, 1}, //7
+	};
+
+	int const faces[] = {
+			6, 0, 4, // bottom
+			0, 6, 2, //
+
+			5, 1, 7, // top
+			1, 3, 7, //
+
+			4, 0, 1, // left
+			1, 5, 4, //
+
+			3, 2, 6, // right
+			6, 7, 3, //
+
+			3, 1, 0, // back
+			3, 0, 2, //
+
+			4, 5, 7, // front
+			4, 7, 6, //
+	};
+
+	vec3 normals[8];
+	calc_mesh_normals(normals, points, faces, 8, 12);
+
+	for (int i = 0; i < 8; ++i)
+	{
+		std::cout << "point: ( " << points[i].x << "; " << points[i].y << "; " << points[i].z << " )" << std::endl 
+			<< "normal: ( " << normals[i].x << "; " << normals[i].y << "; " << normals[i].z << " )" << std::endl;
+	}
+
+	//calc_mesh_normals();
 	return 0;
 }

@@ -1,4 +1,4 @@
-// Approximate time - 1 hour
+// Approximate time - 20 minutes
 
 #pragma once
 

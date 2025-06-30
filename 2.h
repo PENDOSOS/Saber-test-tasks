@@ -29,7 +29,7 @@ private:
 	ListNode* GetPointerToRandomNode();
 
 	void ClearList();
-private:
+
 	ListNode* head;
 	ListNode* tail;
 	int count;
