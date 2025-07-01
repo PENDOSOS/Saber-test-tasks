@@ -2,7 +2,6 @@
 
 #include "3.h"
 
-#include <unordered_map>
 #include <vector>
 
 void cross(vec3* result, vec3* firstVector, vec3* secondVector)
@@ -38,55 +37,47 @@ void calc_normal(vec3* normal, const vec3* firstVertex, const vec3* secondVertex
 	normalize(normal);
 }
 
-void calc_average_normal(vec3* result, const std::vector<vec3*>& normals)
-{
-	result->x = 0;
-	result->y = 0;
-	result->z = 0;
-
-	for (int i = 0; i < normals.size(); i++)
-	{
-		result->x += normals[i]->x;
-		result->y += normals[i]->y;
-		result->z += normals[i]->z;
-	}
-
-	normalize(result);
-}
-
 void calc_mesh_normals(vec3* normals, const vec3* verts, const int* faces, int nverts, int nfaces)
 {
 	if (nfaces == 0 || nverts == 0 || normals == nullptr || verts == nullptr || faces == nullptr)
 		return;
 
-	// key - vertex index, value - vector which store all normals to to this vertex
-	std::unordered_map<int, std::vector<vec3*>> verticesNormals;
+	std::vector<vec3*> vertNormals;
+	vertNormals.resize(nverts);
 
-	// calculate normal to every triangle
+	for (int i = 0; i < nverts; i++)
+	{
+		vertNormals[i] = &normals[i];
+		vertNormals[i]->x = 0;
+		vertNormals[i]->y = 0;
+		vertNormals[i]->z = 0;
+	}
+
 	for (int i = 0; i < nfaces; i++)
 	{
-		// take ptr to triangle vertex by its index
 		const vec3* firstVertex = &verts[faces[3 * i]];
 		const vec3* secondVertex = &verts[faces[3 * i + 1]];
 		const vec3* thirdVertex = &verts[faces[3 * i + 2]];
 
-		vec3* normal = new vec3{0, 0, 0};
+		vec3 normal = { 0, 0, 0 };
 
-		calc_normal(normal, firstVertex, secondVertex, thirdVertex);
+		calc_normal(&normal, firstVertex, secondVertex, thirdVertex);
 
-		verticesNormals[faces[3 * i]].push_back(normal);
-		verticesNormals[faces[3 * i + 1]].push_back(normal);
-		verticesNormals[faces[3 * i + 2]].push_back(normal);
+		vertNormals[faces[3 * i]]->x += normal.x;
+		vertNormals[faces[3 * i]]->y += normal.y;
+		vertNormals[faces[3 * i]]->z += normal.z;
+
+		vertNormals[faces[3 * i + 1]]->x += normal.x;
+		vertNormals[faces[3 * i + 1]]->y += normal.y;
+		vertNormals[faces[3 * i + 1]]->z += normal.z;
+
+		vertNormals[faces[3 * i + 2]]->x += normal.x;
+		vertNormals[faces[3 * i + 2]]->y += normal.y;
+		vertNormals[faces[3 * i + 2]]->z += normal.z;
 	}
 
 	for (int i = 0; i < nverts; i++)
 	{
-		calc_average_normal(&normals[i], verticesNormals[i]);
-		
+		normalize(vertNormals[i]);
 	}
-
-	// очищение памяти векторов 
-	// вместо указателя в ключе - индекс
-
-	//for (const auto)
 }

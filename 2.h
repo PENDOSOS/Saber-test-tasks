@@ -26,15 +26,7 @@ public:
 
 	ListNode* GetTail() { return tail; }
 private:
-	// structure to write/read ListNode to/from file
-	struct ListNodeFile
-	{
-		int64_t nodeIndex;
-		int64_t randIndex;
-		std::string data;
-	};
-
-	int64_t/*ListNode**/ GetPointerToRandomNode();
+	int64_t GetIndexOfRandomNode();
 
 	void ClearList();
 

@@ -1,3 +1,2 @@
-﻿  2.cpp
-C:\Users\elobu\source\repos\Saber-test-tasks\Saber-test-tasks\2.cpp(91,17): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+﻿  3.cpp
   Saber-test-tasks.vcxproj -> C:\Users\elobu\source\repos\Saber-test-tasks\x64\Debug\Saber-test-tasks.exe

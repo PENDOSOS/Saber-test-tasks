@@ -22,7 +22,7 @@ int main()
 	// AddNode adds new node to list
 	{
 		testList->AddNode(std::string("001   fsdfsdf  12"));
-		testList->AddNode(std::string("002"));
+		testList->AddNode(std::string(""));
 		testList->AddNode(std::string("003"));
 		testList->AddNode(std::string("004"));
 		testList->AddNode(std::string("005"));
@@ -99,11 +99,11 @@ int main()
 	vec3 normals[8];
 	calc_mesh_normals(normals, points, faces, 8, 12);
 
-	/*for (int i = 0; i < 8; ++i)
+	for (int i = 0; i < 8; ++i)
 	{
 		std::cout << "point: ( " << points[i].x << "; " << points[i].y << "; " << points[i].z << " )" << std::endl 
 			<< "normal: ( " << normals[i].x << "; " << normals[i].y << "; " << normals[i].z << " )" << std::endl;
-	}*/
+	}
 
 	//calc_mesh_normals();
 	return 0;
