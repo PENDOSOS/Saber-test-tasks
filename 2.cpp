@@ -1,4 +1,4 @@
-// Approximate time - 5 hours
+// Approximate time - 4 hours
 
 #include "2.h"
 
@@ -23,11 +23,26 @@ void List::Serialize(FILE* file)
 	ListNode* currentNode = head;
 	while (currentNode != nullptr)
 	{
+<<<<<<< Updated upstream
 		// write addresses of node's pointers in file to have possibility to restore full structure of list
 		fprintf(file, "%s %p %p\n", currentNode->data.c_str(), currentNode, currentNode->rand);
 		//fwrite();
 
 		currentNode = currentNode->next;
+=======
+		size_t dataSize = nodePointers[i]->data.size();
+		if (!fwrite(&dataSize, sizeof(size_t), 1, file))
+			return;
+
+		if (dataSize > 0 && fwrite(nodePointers[i]->data.c_str(), sizeof(char), dataSize, file) != dataSize)
+			return;
+
+		if (fwrite(&i, sizeof(int64_t), 1, file) != 1)
+			return;
+		
+		if (fwrite(&randomNodeIndices[i], sizeof(int64_t), 1, file) != 1)
+			return;
+>>>>>>> Stashed changes
 	}
 }
 
@@ -73,11 +88,18 @@ void List::Deserialize(FILE* file)
 		ListNode* randomNode = nullptr;
 		ListNode* currentNode = nodePointers[i];
 
+<<<<<<< Updated upstream
 		std::string oldRandomNodeAddress = nodeRelations[fromNewToOldAddress[currentNode]];
 		// check if old random node address isn't null then assign new random node addres to current node 
 		// else assign nullptr
 		if (std::stoull(oldRandomNodeAddress)) // just enough to get nonzero value to check if pointer is not null
 			randomNode = fromOldToNewAddress[oldRandomNodeAddress];
+=======
+		if (nodeRelations[i] != -1)
+		{
+			randomNode = nodePointers[nodeRelations[i]];
+		}
+>>>>>>> Stashed changes
 		currentNode->rand = randomNode;
 	}
 }
@@ -104,17 +126,30 @@ void List::SetPointersToRandomNodes()
 {
 	std::srand(time(0));
 	ListNode* currentNode = head;
+<<<<<<< Updated upstream
 	ListNode* randomNode = nullptr;
 	while (currentNode != nullptr)
 	{
 		randomNode = GetPointerToRandomNode();
 
 		if (randomNode == currentNode)
+=======
+	int64_t currentNodeIndex = 0;
+	int64_t randomNode;
+	while (currentNode != nullptr)
+	{
+		randomNode = GetIndexOfRandomNode();
+		if (randomNode == currentNodeIndex)
+			randomNode = -1;
+		randomNodeIndices.push_back(randomNode);
+		if (randomNode == -1 || nodePointers[randomNode] == currentNode)
+>>>>>>> Stashed changes
 			currentNode->rand = nullptr;
 		else
 			currentNode->rand = randomNode;
 
 		currentNode = currentNode->next;
+		currentNodeIndex++;
 	}
 }
 

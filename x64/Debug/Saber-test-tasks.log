@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 ﻿  1.cpp
   2.cpp
 C:\Users\elobu\source\repos\Saber-test-tasks\Saber-test-tasks\2.cpp(105,17): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
@@ -5,4 +6,8 @@ C:\Users\elobu\source\repos\Saber-test-tasks\Saber-test-tasks\2.cpp(105,17): war
 C:\Users\elobu\source\repos\Saber-test-tasks\Saber-test-tasks\3.cpp(17,13): warning C4244: return: преобразование "double" в "int", возможна потеря данных
   main.cpp
   Создание кода...
+=======
+﻿  2.cpp
+C:\Users\elobu\source\repos\Saber-test-tasks\Saber-test-tasks\2.cpp(113,17): warning C4244: аргумент: преобразование "time_t" в "unsigned int", возможна потеря данных
+>>>>>>> Stashed changes
   Saber-test-tasks.vcxproj -> C:\Users\elobu\source\repos\Saber-test-tasks\x64\Debug\Saber-test-tasks.exe
