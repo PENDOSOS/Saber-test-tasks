@@ -5,31 +5,20 @@
 #include <random>
 #include <unordered_map>
 #include <sstream>
+#include <iostream>
 
 List::~List()
 {
 	ClearList();
 }
 
-// fwrite ?
-// дата с пробелами
-// указатели плохо (?)
-
 void List::Serialize(FILE* file)
 {
 	if (file == nullptr)
 		return;
-
-	ListNode* currentNode = head;
-	while (currentNode != nullptr)
+	
+	for (int64_t i = 0; i < count; i++)
 	{
-<<<<<<< Updated upstream
-		// write addresses of node's pointers in file to have possibility to restore full structure of list
-		fprintf(file, "%s %p %p\n", currentNode->data.c_str(), currentNode, currentNode->rand);
-		//fwrite();
-
-		currentNode = currentNode->next;
-=======
 		size_t dataSize = nodePointers[i]->data.size();
 		if (!fwrite(&dataSize, sizeof(size_t), 1, file))
 			return;
@@ -42,7 +31,6 @@ void List::Serialize(FILE* file)
 		
 		if (fwrite(&randomNodeIndices[i], sizeof(int64_t), 1, file) != 1)
 			return;
->>>>>>> Stashed changes
 	}
 }
 
@@ -54,32 +42,38 @@ void List::Deserialize(FILE* file)
 	if (count > 0)
 		ClearList();
 
-	// key - current node address, value - address to random node in current node
-	std::unordered_map<std::string, std::string> nodeRelations;
-	// key - new node address, value - old node address
-	std::unordered_map<ListNode*, std::string> fromNewToOldAddress;
-	// key - old node address, value - new node address
-	std::unordered_map<std::string, ListNode*> fromOldToNewAddress;
+	// key - current node index, value - random node index in current node
+	std::unordered_map<int64_t, int64_t> nodeRelations;
 
-	std::vector<std::string> lineElements;
-	lineElements.resize(3);
-
-	char data[1000];
-
-	while (fgets(data, 1000, file) != nullptr)
+	size_t dataSize = 0;
+	int64_t nodeIndex = 0;
+	int64_t randIndex = 0;
+	
+	while (fread(&dataSize, sizeof(size_t), 1, file))
 	{
-		std::string temp{ data };
+		std::string data;
+		if (dataSize)
+		{
+			char* buf = new char[dataSize + 1];
+			if (!fread(buf, sizeof(char), dataSize, file))
+			{
+				delete[] buf;
+				return;
+			}
+			buf[dataSize] = '\0';
+			data = buf;
+			delete[] buf;
+		}
 
-		std::istringstream sstream(temp);
-		sstream >> lineElements[0]; // node data
-		sstream >> lineElements[1]; // ptr to current node
-		sstream >> lineElements[2]; // ptr to random node in current node
-		if (lineElements[0] == "" || lineElements[1] == "" || lineElements[2] == "")
+		if (!fread(&nodeIndex, sizeof(int64_t), 1, file))
 			return;
-		AddNode(lineElements[0]);
-		nodeRelations[lineElements[1]] = lineElements[2];
-		fromNewToOldAddress[GetTail()] = lineElements[1];
-		fromOldToNewAddress[lineElements[1]] = GetTail();
+
+		if (!fread(&randIndex, sizeof(int64_t), 1, file))
+			return;
+
+		nodeRelations[nodeIndex] = randIndex;
+		AddNode(data);
+		randomNodeIndices.push_back(randIndex);
 	}
 
 	// restore 
@@ -88,18 +82,10 @@ void List::Deserialize(FILE* file)
 		ListNode* randomNode = nullptr;
 		ListNode* currentNode = nodePointers[i];
 
-<<<<<<< Updated upstream
-		std::string oldRandomNodeAddress = nodeRelations[fromNewToOldAddress[currentNode]];
-		// check if old random node address isn't null then assign new random node addres to current node 
-		// else assign nullptr
-		if (std::stoull(oldRandomNodeAddress)) // just enough to get nonzero value to check if pointer is not null
-			randomNode = fromOldToNewAddress[oldRandomNodeAddress];
-=======
 		if (nodeRelations[i] != -1)
 		{
 			randomNode = nodePointers[nodeRelations[i]];
 		}
->>>>>>> Stashed changes
 		currentNode->rand = randomNode;
 	}
 }
@@ -126,14 +112,6 @@ void List::SetPointersToRandomNodes()
 {
 	std::srand(time(0));
 	ListNode* currentNode = head;
-<<<<<<< Updated upstream
-	ListNode* randomNode = nullptr;
-	while (currentNode != nullptr)
-	{
-		randomNode = GetPointerToRandomNode();
-
-		if (randomNode == currentNode)
-=======
 	int64_t currentNodeIndex = 0;
 	int64_t randomNode;
 	while (currentNode != nullptr)
@@ -143,25 +121,19 @@ void List::SetPointersToRandomNodes()
 			randomNode = -1;
 		randomNodeIndices.push_back(randomNode);
 		if (randomNode == -1 || nodePointers[randomNode] == currentNode)
->>>>>>> Stashed changes
 			currentNode->rand = nullptr;
 		else
-			currentNode->rand = randomNode;
+			currentNode->rand = nodePointers[randomNode];
 
 		currentNode = currentNode->next;
 		currentNodeIndex++;
 	}
 }
 
-ListNode* List::GetPointerToRandomNode()
+int64_t List::GetIndexOfRandomNode()
 {	
-	int elem = -1 + std::rand() % (count + 1);
-	if (elem == -1)
-		return nullptr;
-	else
-	{
-		return nodePointers[elem];
-	}
+	int64_t elem = -1 + std::rand() % (count + 1);
+	return elem;
 }
 
 void List::ClearList()
@@ -176,4 +148,5 @@ void List::ClearList()
 	}
 	head = nullptr;
 	nodePointers.clear();
+	randomNodeIndices.clear();
 }
